@@ -11,9 +11,9 @@ spec:
       hostNetwork: true
       serviceAccount: kube-keepalived-vip
       containers:
-        - image: gcr.io/google_containers/kube-keepalived-vip:0.9
+        - image: gcr.io/google_containers/kube-keepalived-vip:0.11
           name: kube-keepalived-vip
-          # imagePullPolicy: Always
+          imagePullPolicy: Always
           securityContext:
             privileged: true
           volumeMounts:
@@ -35,7 +35,6 @@ spec:
           # to use unicast
           args:
           - --services-configmap=default/vip-configmap
-          - --v=10
           # unicast uses the ip of the nodes instead of multicast
           # this is useful if running in cloud providers (like AWS)
           #- --use-unicast=true

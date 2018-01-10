@@ -1,4 +1,4 @@
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: kube-keepalived-vip
@@ -10,15 +10,15 @@ rules:
   - endpoints
   - services
   - configmaps
-  verbs: ["get", "list", "watch"]
+  verbs: ["create","get", "list", "watch"]
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: kube-keepalived-vip 
-  namespace: default 
+  name: kube-keepalived-vip
+  namespace: default
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: kube-keepalived-vip

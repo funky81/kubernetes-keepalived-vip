@@ -1,0 +1,50 @@
+# Create Pod container that have 2 container with running dotnet core apps called CacheLoader
+# The container itself mount to /data which mapped to /shared-data in host
+# The pod expose service into port 30303 in each host because it have NodePort type
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: cache-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cache-server
+  template:
+    metadata:
+      labels:
+        app: cache-server
+    spec:
+      containers:
+      - name: redis
+        image: funky81/redis-template:4.0.6-2.1.2r-1
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - mountPath: /data
+          name: shared-data
+        command: ["/bin/bash"]
+        args: ["-c","/usr/local/bin/docker-entrypoint.sh && redis-server && cd /data/CacheLoader/ && /root/dotnet/dotnet CacheLoader.dll && sleep 5000;"]
+        #args: ["-c","sleep 5 && cat /data/runCache.sh >> /usr/local/bin/docker-entrypoint.sh;"]
+      volumes:
+      - name: shared-data
+        hostPath:
+          path: /shared-data
+          type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cache-server
+  labels:
+    app: cache-server
+spec:
+  type: NodePort
+  ports:
+  - port: 6379
+    nodePort: 30303
+    targetPort: 6379
+    protocol: TCP
+    name: http
+  selector:
+    app: cache-server
